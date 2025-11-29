@@ -88,37 +88,18 @@ export function TerminalInput({ onSubmit, onProceed, disabled = false, prompt, w
       onClick={handleContainerClick}
     >
       <span className={styles.prompt}>{prompt}</span>
-      {waitingForNext ? (
-        <span className={styles.waitingHint}>← Enter を押して次へ</span>
-      ) : (
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className={styles.input}
-          autoFocus
-          autoComplete="off"
-          spellCheck={false}
-          disabled={disabled}
-        />
-      )}
-      {/* 非表示の入力フィールドでEnterを受け付ける */}
-      {waitingForNext && (
-        <input
-          ref={inputRef}
-          type="text"
-          className={styles.hiddenInput}
-          autoFocus
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && onProceed) {
-              e.preventDefault();
-              onProceed();
-            }
-          }}
-        />
-      )}
+      <input
+        ref={inputRef}
+        type="text"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className={styles.input}
+        autoFocus
+        autoComplete="off"
+        spellCheck={false}
+        disabled={disabled}
+      />
     </form>
   );
 }

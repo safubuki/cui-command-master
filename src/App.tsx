@@ -11,7 +11,7 @@ import { CommandCategory } from './types';
 import './styles/globals.css';
 
 function CategoryFilter() {
-  const { state, dispatch, skipScenario } = useApp();
+  const { state, dispatch } = useApp();
   
   return (
     <div className="category-filter">
@@ -24,10 +24,17 @@ function CategoryFilter() {
           {cat === 'all' ? 'すべて' : cat}
         </button>
       ))}
-      <button className="skip-btn" onClick={skipScenario}>
-        ⏭ スキップ
-      </button>
     </div>
+  );
+}
+
+function SkipButton() {
+  const { skipScenario } = useApp();
+  
+  return (
+    <button className="skip-btn-bottom" onClick={skipScenario}>
+      ⏭ スキップ
+    </button>
   );
 }
 
@@ -35,15 +42,20 @@ function AppContent() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1 className="app-title">
-          <span>$</span> CUI Typing Master
-        </h1>
+        <div className="title-section">
+          <h1 className="app-title">
+            <span>$</span> CUI Command Master
+          </h1>
+          <p className="app-catchcopy">指が覚える、本物のコマンド力。</p>
+          <p className="app-subtitle">Linux / Git / Docker / Python / Network — 実務で使うコマンドをタイピングで体得</p>
+        </div>
         <CategoryFilter />
       </header>
       
       <main className="main-layout">
         <section className="terminal-section">
           <Terminal />
+          <SkipButton />
         </section>
         
         <aside className="sidebar">

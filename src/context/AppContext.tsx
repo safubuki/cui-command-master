@@ -12,7 +12,7 @@ import {
   VFSState,
   TerminalEnvironment
 } from '../types';
-import { createInitialVFS, ls } from '../lib/vfs';
+import { createInitialVFS, mkdir } from '../lib/vfs';
 import { generateDynamicContext, hydrateTemplate } from '../lib/dynamicVars';
 import { judgeCommand } from '../data/commandDefs';
 import { MiniScenario, MiniScenarioStep, getRandomMiniScenario, MINI_SCENARIOS } from '../data/miniScenarios';
@@ -34,6 +34,36 @@ const USERNAME_POOL = [
 /** ランダム選択 */
 function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * タイポ判定（入力がコマンドのタイポかどうか）
+ * 編集距離が2以下の場合はタイポとみなす
+ */
+function isTypoOf(input: string, expected: string): boolean {
+  if (input === expected) return true;
+  if (Math.abs(input.length - expected.length) > 2) return false;
+  
+  // 簡易的なレーベンシュタイン距離の計算
+  const len1 = input.length;
+  const len2 = expected.length;
+  const dp: number[][] = Array.from({ length: len1 + 1 }, () => Array(len2 + 1).fill(0));
+  
+  for (let i = 0; i <= len1; i++) dp[i][0] = i;
+  for (let j = 0; j <= len2; j++) dp[0][j] = j;
+  
+  for (let i = 1; i <= len1; i++) {
+    for (let j = 1; j <= len2; j++) {
+      const cost = input[i - 1] === expected[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,      // 削除
+        dp[i][j - 1] + 1,      // 挿入
+        dp[i - 1][j - 1] + cost // 置換
+      );
+    }
+  }
+  
+  return dp[len1][len2] <= 2;
 }
 
 /** ターミナル環境を生成 */
@@ -101,34 +131,15 @@ const initialState: AppState = {
 };
 
 /** ターミナルの初期表示を生成 */
-function createInitialTerminalHistory(vfs: VFSState, env: TerminalEnvironment): TerminalLine[] {
-  const now = Date.now();
-  const files = ls(vfs, '.');
-  const lines: TerminalLine[] = [];
-  
-  // 常にlsコマンドを実行して現在の状態を表示
-  lines.push({
-    type: 'input',
-    content: 'ls',
-    timestamp: now,
-  });
-  
-  if (files.length > 0) {
-    lines.push({
-      type: 'output',
-      content: files.join('  '),
-      timestamp: now + 1,
-    });
-  } else {
-    // ファイルがない場合は空行（lsの正常動作）
-    lines.push({
-      type: 'output',
-      content: '',
-      timestamp: now + 1,
-    });
-  }
-  
-  return lines;
+function createInitialTerminalHistory(prompt: string): TerminalLine[] {
+  // 初期状態でプロンプト行を表示（入力待ち状態を示す）
+  return [
+    {
+      type: 'input',
+      content: '',  // 空のコマンド（プロンプトのみ表示）
+      timestamp: Date.now(),
+    },
+  ];
 }
 
 /** 新しいミニシナリオを開始 */
@@ -141,8 +152,12 @@ function createNewMiniScenario(state: AppState): Partial<AppState> {
   const dynamic = generateDynamicContext(scenario.requiredVars);
   const env = createTerminalEnvironment();
   
-  // VFSを初期化
+  // VFSを初期化（ホームディレクトリを動的に作成）
   let newVfs = createInitialVFS();
+  
+  // ユーザーのホームディレクトリを作成
+  newVfs = mkdir(newVfs, env.homeDir);
+  
   if (scenario.setupVfs) {
     newVfs = scenario.setupVfs(newVfs, dynamic, env.homeDir);
   } else {
@@ -152,8 +167,14 @@ function createNewMiniScenario(state: AppState): Partial<AppState> {
   // dynamicに_homeDirを追加
   dynamic._homeDir = env.homeDir;
   
+  // プロンプト文字列を生成
+  const currentDir = newVfs.currentPath === env.homeDir 
+    ? '~' 
+    : newVfs.currentPath.split('/').pop() || '/';
+  const prompt = `${env.username}@${env.hostname}:${currentDir}$`;
+  
   // 初期表示を生成
-  const initialHistory = createInitialTerminalHistory(newVfs, env);
+  const initialHistory = createInitialTerminalHistory(prompt);
   
   return {
     currentMiniScenario: scenario,
@@ -420,6 +441,23 @@ export function AppProvider({ children }: AppProviderProps) {
         dispatch({
           type: 'RECORD_RESULT',
           payload: { commandId: step.commandId, correct: true },
+        });
+      }
+    } else {
+      // お題に関連するコマンドかどうかをチェック
+      // 期待コマンドの最初のトークン（コマンド名）を取得
+      const expectedCmd = expectation.split(/\s+/)[0];
+      const inputCmd = input.trim().split(/\s+/)[0];
+      
+      // 同じコマンドを実行しようとした場合はエラーを表示
+      // （別のコマンドは自由に実行できる）
+      if (inputCmd === expectedCmd || isTypoOf(inputCmd, expectedCmd)) {
+        dispatch({ 
+          type: 'SET_TASK_RESULT', 
+          payload: { 
+            result: 'error', 
+            message: judgeResult.messages[0] || '入力が間違っています' 
+          } 
         });
       }
     }

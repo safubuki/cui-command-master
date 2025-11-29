@@ -112,41 +112,57 @@
   font-size: 1.5rem;
 }
 
-/* Enterで次へ のプロンプト */
+/* Enterで次へ のプロンプト - 目立つアニメーション */
 .nextPrompt {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 16px;
-  background: rgba(78, 201, 176, 0.1);
-  border: 1px dashed rgba(78, 201, 176, 0.4);
-  border-radius: 8px;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(78, 201, 176, 0.15) 0%, rgba(78, 201, 176, 0.08) 100%);
+  border: 2px solid rgba(78, 201, 176, 0.5);
+  border-radius: 10px;
   color: #4ec9b0;
-  font-size: 0.9rem;
-  animation: gentlePulse 2s ease-in-out infinite;
+  font-size: 1rem;
+  font-weight: 500;
+  animation: pulseGlow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(78, 201, 176, 0.2);
 }
 
 .nextPrompt kbd {
-  background: rgba(78, 201, 176, 0.2);
-  border: 1px solid rgba(78, 201, 176, 0.4);
-  border-radius: 4px;
-  padding: 2px 8px;
+  background: rgba(78, 201, 176, 0.25);
+  border: 2px solid rgba(78, 201, 176, 0.6);
+  border-radius: 6px;
+  padding: 4px 12px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #4ec9b0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  animation: keyBounce 1.5s ease-in-out infinite;
 }
 
-@keyframes gentlePulse {
+@keyframes pulseGlow {
   0%, 100% {
-    opacity: 0.8;
-    border-color: rgba(78, 201, 176, 0.3);
+    opacity: 0.85;
+    border-color: rgba(78, 201, 176, 0.4);
+    box-shadow: 0 0 10px rgba(78, 201, 176, 0.15);
+    transform: scale(1);
   }
   50% {
     opacity: 1;
-    border-color: rgba(78, 201, 176, 0.6);
+    border-color: rgba(78, 201, 176, 0.8);
+    box-shadow: 0 0 25px rgba(78, 201, 176, 0.35);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes keyBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
   }
 }
 

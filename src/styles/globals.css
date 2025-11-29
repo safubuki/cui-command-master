@@ -117,15 +117,33 @@ input, textarea {
   flex-shrink: 0;
 }
 
+.title-section {
+  margin-bottom: var(--spacing-sm);
+}
+
 .app-title {
   font-size: var(--font-size-xl);
   color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 4px;
 }
 
 .app-title span {
   color: var(--color-primary);
   text-shadow: 0 0 10px rgba(78, 201, 176, 0.5);
+}
+
+.app-catchcopy {
+  font-size: 1.1rem;
+  color: #4ec9b0;
+  font-weight: 500;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.app-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 400;
 }
 
 /* Category Filter */
@@ -170,6 +188,24 @@ input, textarea {
 
 .skip-btn:hover {
   background: rgba(255, 152, 0, 0.25);
+}
+
+/* ターミナル下のスキップボタン */
+.skip-btn-bottom {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.25);
+  border-radius: 8px;
+  color: #ff9800;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.skip-btn-bottom:hover {
+  background: rgba(255, 152, 0, 0.2);
+  border-color: rgba(255, 152, 0, 0.4);
 }
 
 /* Main Layout */

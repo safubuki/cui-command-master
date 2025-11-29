@@ -1013,6 +1013,125 @@ function executeExit(args: string[], ctx: ExecutionContext): CommandExecutionRes
 }
 
 /**
+ * wgetコマンドの実行（シミュレーション）
+ */
+function executeWget(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length === 0) {
+    return {
+      output: ['wget: URLを指定してください'],
+      success: false,
+    };
+  }
+  
+  const url = args.find(a => !a.startsWith('-')) || '';
+  const filename = url.split('/').pop() || 'index.html';
+  
+  // VFSにファイルを追加
+  const newVfs = vfs.touch(ctx.vfs, filename);
+  
+  return {
+    output: [
+      `--2024-11-29 10:00:00--  ${url}`,
+      `Resolving ${url.split('/')[0]}... connected.`,
+      'HTTP request sent, awaiting response... 200 OK',
+      `Length: 1024 (1.0K) [application/octet-stream]`,
+      `Saving to: '${filename}'`,
+      '',
+      `${filename}              100%[===================>]   1.00K  --.-KB/s    in 0s`,
+      '',
+      `'${filename}' saved [1024/1024]`,
+    ],
+    success: true,
+    newVfs,
+  };
+}
+
+/**
+ * curlコマンドの実行（シミュレーション）
+ */
+function executeCurl(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length === 0) {
+    return {
+      output: ['curl: URLを指定してください'],
+      success: false,
+    };
+  }
+  
+  const url = args.find(a => !a.startsWith('-')) || '';
+  const hasOutput = args.includes('-o') || args.includes('-O');
+  
+  if (hasOutput) {
+    const outputIndex = args.indexOf('-o');
+    const filename = outputIndex >= 0 ? args[outputIndex + 1] : url.split('/').pop() || 'output';
+    const newVfs = vfs.touch(ctx.vfs, filename);
+    return {
+      output: [
+        `  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current`,
+        `                                 Dload  Upload   Total   Spent    Left  Speed`,
+        `100  1024  100  1024    0     0  10240      0 --:--:-- --:--:-- --:--:-- 10240`,
+      ],
+      success: true,
+      newVfs,
+    };
+  }
+  
+  return {
+    output: [
+      '{"status": "ok", "message": "Hello from server"}',
+    ],
+    success: true,
+  };
+}
+
+/**
+ * grepコマンドの実行（シミュレーション）
+ */
+function executeGrep(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length < 2) {
+    return {
+      output: ['grep: パターンとファイルを指定してください'],
+      success: false,
+    };
+  }
+  
+  const pattern = args[0];
+  const filename = args[1];
+  const node = vfs.getNode(ctx.vfs, filename);
+  
+  if (!node) {
+    return {
+      output: [`grep: ${filename}: そのようなファイルやディレクトリはありません`],
+      success: false,
+    };
+  }
+  
+  if (node.type === 'directory') {
+    return {
+      output: [`grep: ${filename}: ディレクトリです`],
+      success: false,
+    };
+  }
+  
+  const content = node.content || '';
+  const lines = content.split('\n').filter(line => line.includes(pattern));
+  
+  return {
+    output: lines,
+    success: true,
+  };
+}
+
+/**
+ * deactivateコマンドの実行（シミュレーション）
+ */
+function executeDeactivate(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  return {
+    output: [],
+    success: true,
+  };
+}
+
+/**
  * topコマンドの実行（シミュレーション）
  */
 function executeTop(args: string[], ctx: ExecutionContext): CommandExecutionResult {
@@ -1042,6 +1161,7 @@ const COMMAND_HANDLERS: Record<string, CommandHandler> = {
   cp: executeCp,
   mv: executeMv,
   cat: executeCat,
+  grep: executeGrep,
   ps: executePs,
   top: executeTop,
   df: executeDf,
@@ -1051,10 +1171,14 @@ const COMMAND_HANDLERS: Record<string, CommandHandler> = {
   docker: executeDocker,
   pip: executePip,
   python3: executePython3,
+  python: executePython3,
   source: executeSource,
+  deactivate: executeDeactivate,
   ping: executePing,
   ssh: executeSsh,
   scp: executeScp,
+  wget: executeWget,
+  curl: executeCurl,
   exit: executeExit,
 };
 

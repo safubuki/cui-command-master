@@ -16,7 +16,7 @@ export function TaskPanel() {
   
   const taskHint = getCurrentTaskHint();
   const formatHint = getCurrentFormatHint();
-  const { taskResult, currentMiniScenario, currentStepIndex } = state;
+  const { taskResult, lastErrorMessage, currentMiniScenario, currentStepIndex } = state;
   
   // ミニシナリオのステップ情報
   const stepInfo = currentMiniScenario
@@ -30,10 +30,14 @@ export function TaskPanel() {
   const renderNextPrompt = () => {
     if (taskResult !== 'success') return null;
     
+    const nextText = miniScenarioCompleted 
+      ? '次のシナリオへ' 
+      : '次のステップへ';
+    
     return (
       <div className={styles.nextPrompt}>
         <kbd>Enter</kbd>
-        <span>を押して次へ進む</span>
+        <span>で{nextText}</span>
       </div>
     );
   };
@@ -61,6 +65,16 @@ export function TaskPanel() {
           </div>
           {renderNextPrompt()}
         </>
+      );
+    }
+    
+    // エラー表示（お題に関連するコマンドで間違いがあった場合）
+    if (taskResult === 'error' && lastErrorMessage) {
+      return (
+        <div className={`${styles.result} ${styles.error}`}>
+          <span className={styles.resultIcon}>❌</span>
+          <span>{lastErrorMessage}</span>
+        </div>
       );
     }
     
