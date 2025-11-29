@@ -1,0 +1,275 @@
+.panel {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid #2a2a4a;
+}
+
+/* シナリオヘッダー */
+.scenarioHeader {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scenarioTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.scenarioTitle {
+  color: #4ec9b0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.difficulty {
+  color: #ffd700;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+}
+
+.stepProgress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.stepDot {
+  width: 24px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.stepDot.stepCompleted {
+  background: #4caf50;
+}
+
+.stepDot.stepCurrent {
+  background: #4ec9b0;
+  box-shadow: 0 0 8px rgba(78, 201, 176, 0.5);
+}
+
+.stepInfo {
+  color: #888;
+  font-size: 0.75rem;
+}
+
+/* お題目セクション */
+.taskSection {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.taskTitle {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.stepBadge {
+  background: #4ec9b0;
+  color: #1a1a2e;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.taskContent {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  border-left: 3px solid #4ec9b0;
+}
+
+.taskContent code {
+  background: rgba(78, 201, 176, 0.2);
+  color: #4ec9b0;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.noTask {
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 12px;
+}
+
+.completedMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(76, 175, 80, 0.15);
+  border-radius: 8px;
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.completedIcon {
+  font-size: 1.5rem;
+}
+
+.resultSuccess {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(76, 175, 80, 0.15);
+  border-radius: 6px;
+  color: #4caf50;
+  font-size: 0.9rem;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.proceedHint {
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: #888;
+  margin-left: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ヒントセクション */
+.hintSection {
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  margin: 0 0 10px 0;
+  color: #cccccc;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.formatHint {
+  margin-bottom: 12px;
+}
+
+.formatHint code {
+  display: block;
+  background: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.commandInfo {
+  margin-bottom: 12px;
+}
+
+.description {
+  margin: 0 0 10px 0;
+  color: #aaaaaa;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.syntaxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.syntaxLabel {
+  color: #666;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.syntax {
+  background: rgba(78, 201, 176, 0.15);
+  color: #4ec9b0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+.hintButton {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hintButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.extraHint {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(78, 201, 176, 0.1);
+  border-radius: 6px;
+  border: 1px dashed rgba(78, 201, 176, 0.3);
+}
+
+.extraHint code {
+  color: #4ec9b0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+/* 進捗セクション */
+.progressSection {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ec9b0, #00bcd4);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.scenarioTitle {
+  color: #666;
+  font-size: 0.8rem;
+}

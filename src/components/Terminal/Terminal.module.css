@@ -1,0 +1,168 @@
+.terminal {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  max-height: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+  background-color: #323232;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.title {
+  color: #888;
+  font-size: 0.85rem;
+  margin-left: 8px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 出力エリア */
+.output {
+  flex: 1;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.line {
+  white-space: pre-wrap;
+  word-break: break-all;
+  padding: 2px 0;
+}
+
+.lineInput {
+  color: #ffffff;
+  display: flex;
+  gap: 8px;
+}
+
+.lineOutput {
+  color: #cccccc;
+}
+
+.lineSuccess {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.lineError {
+  color: #f44336;
+}
+
+.lineInfo {
+  color: #4ec9b0;
+}
+
+/* 履歴表示用のプロンプト */
+.historyPrompt {
+  color: #4ec9b0;
+  font-weight: bold;
+}
+
+/* 入力フォーム */
+.inputForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+  cursor: text;
+  flex-shrink: 0;
+}
+
+.prompt {
+  color: #4ec9b0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+  caret-color: #4ec9b0;
+}
+
+.input::placeholder {
+  color: #666;
+}
+
+.input:disabled {
+  opacity: 0.5;
+}
+
+/* 次へ進む待機状態のヒント */
+.waitingHint {
+  color: #4ec9b0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 非表示の入力フィールド（Enterキー受け付け用） */
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* スクロールバー */
+.output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.output::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.output::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.output::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}

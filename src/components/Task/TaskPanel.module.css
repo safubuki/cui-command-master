@@ -1,0 +1,177 @@
+.panel {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid #2a2a4a;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.stepInfo {
+  background: #4ec9b0;
+  color: #1a1a2e;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.task {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  border-left: 4px solid #4ec9b0;
+}
+
+.task code {
+  background: rgba(78, 201, 176, 0.2);
+  color: #4ec9b0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.hintSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.hintLabel {
+  color: #888;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.formatHint {
+  color: #ffd700;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.95rem;
+  background: rgba(255, 215, 0, 0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.error {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.1) 100%);
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.resultIcon {
+  font-size: 1.5rem;
+}
+
+/* Enterで次へ のプロンプト */
+.nextPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: rgba(78, 201, 176, 0.1);
+  border: 1px dashed rgba(78, 201, 176, 0.4);
+  border-radius: 8px;
+  color: #4ec9b0;
+  font-size: 0.9rem;
+  animation: gentlePulse 2s ease-in-out infinite;
+}
+
+.nextPrompt kbd {
+  background: rgba(78, 201, 176, 0.2);
+  border: 1px solid rgba(78, 201, 176, 0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4ec9b0;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    opacity: 0.8;
+    border-color: rgba(78, 201, 176, 0.3);
+  }
+  50% {
+    opacity: 1;
+    border-color: rgba(78, 201, 176, 0.6);
+  }
+}
+
+.scenarioInfo {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scenarioTitle {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty p {
+  color: #888;
+  margin: 0 0 8px 0;
+}
+
+.empty .hint {
+  font-size: 0.85rem;
+  color: #666;
+}
