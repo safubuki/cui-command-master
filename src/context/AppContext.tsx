@@ -191,8 +191,11 @@ function createNewMiniScenario(state: AppState): Partial<AppState> {
 /** Reducer */
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
-    case 'SET_CATEGORY_FILTER':
-      return { ...state, categoryFilter: action.payload };
+    case 'SET_CATEGORY_FILTER': {
+      // カテゴリが変更された場合、新しいシナリオを開始
+      const newState = { ...state, categoryFilter: action.payload };
+      return { ...newState, ...createNewMiniScenario(newState) };
+    }
     
     case 'NEW_MINI_SCENARIO':
       return { ...state, ...createNewMiniScenario(state) };
@@ -507,10 +510,10 @@ export function useApp(): AppContextValue {
 export const CATEGORIES: (CommandCategory | 'all')[] = [
   'all',
   'Linux',
+  'Network',
+  'Python',
   'Git',
   'Docker',
-  'Python',
-  'Network',
 ];
 
 /** ミニシナリオ一覧を取得 */

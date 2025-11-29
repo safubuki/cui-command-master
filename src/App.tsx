@@ -47,7 +47,7 @@ function AppContent() {
             <span>$</span> CUI Command Master
           </h1>
           <p className="app-catchcopy">指が覚える、本物のコマンド力。</p>
-          <p className="app-subtitle">Linux / Git / Docker / Python / Network — 実務で使うコマンドをタイピングで体得</p>
+          <p className="app-subtitle">Linux / Network / Python / Git / Docker — 実務で使うコマンドをタイピングで体得</p>
         </div>
         <CategoryFilter />
       </header>
