@@ -247,6 +247,80 @@
   font-size: 0.9rem;
 }
 
+/* 解説セクション（正解時のみ表示） */
+.tipSection {
+  margin-top: 12px;
+}
+
+.tipButton {
+  width: 100%;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.1) 100%);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 8px;
+  color: #ffc107;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tipButton:hover {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 152, 0, 0.2) 100%);
+  border-color: rgba(255, 193, 7, 0.5);
+}
+
+.tipContent {
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(255, 193, 7, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 193, 7, 0.15);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.tipScene {
+  margin-bottom: 14px;
+}
+
+.tipScene p {
+  margin: 6px 0 0 0;
+  color: #ddd;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.tipLabel {
+  color: #ffc107;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tipList {
+  margin-top: 10px;
+}
+
+.tipList ul {
+  margin: 8px 0 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.tipList li {
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.tipList li code {
+  color: #4ec9b0;
+  background: transparent;
+  padding: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
 /* 進捗セクション */
 .progressSection {
   padding-top: 12px;

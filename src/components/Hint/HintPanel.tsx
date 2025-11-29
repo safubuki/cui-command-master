@@ -3,23 +3,22 @@
  * ミニシナリオのステップ進捗とヒントを表示
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { COMMAND_DEFS } from '../../data/commandDefs';
+import { getCommandTip } from '../../data/commandTips';
 import styles from './Hint.module.css';
 
 export function HintPanel() {
   const { 
     state, 
-    getCurrentExpectation, 
     getCurrentTaskHint, 
     getCurrentFormatHint,
     getCurrentStep,
     isLastStep
   } = useApp();
-  const [showExtraHint, setShowExtraHint] = useState(false);
+  const [showTips, setShowTips] = useState(false);
   
-  const expectation = getCurrentExpectation();
   const taskHint = getCurrentTaskHint();
   const formatHint = getCurrentFormatHint();
   const currentStep = getCurrentStep();
@@ -28,14 +27,12 @@ export function HintPanel() {
   // 現在のコマンドに関する情報を取得
   const currentCommandId = currentStep?.commandId;
   const commandDef = currentCommandId ? COMMAND_DEFS[currentCommandId] : null;
+  const commandTip = currentCommandId ? getCommandTip(currentCommandId) : null;
   
-  // コマンド部分のヒントを生成
-  const getPartialHint = () => {
-    if (!expectation) return '';
-    const parts = expectation.split(' ');
-    if (parts.length <= 1) return parts[0];
-    return `${parts[0]} ${parts.slice(1).map((p: string) => p.startsWith('-') ? p : '___').join(' ')}`;
-  };
+  // ステップが変わったら解説を閉じる
+  useEffect(() => {
+    setShowTips(false);
+  }, [currentStepIndex, currentMiniScenario?.id]);
   
   // ステップ情報
   const stepInfo = currentMiniScenario
@@ -91,16 +88,47 @@ export function HintPanel() {
         
         {/* 結果表示 */}
         {taskResult === 'success' && (
-          <div className={styles.resultSuccess}>
-            <span>✅</span> 正解！ 
-            <span className={styles.proceedHint}>
-              {isLastStep() ? 'Enterで次のシナリオへ' : 'Enterで次のステップへ'}
-            </span>
-          </div>
+          <>
+            <div className={styles.resultSuccess}>
+              <span>✅</span> 正解！ 
+              <span className={styles.proceedHint}>
+                {isLastStep() ? 'Enterで次のシナリオへ' : 'Enterで次のステップへ'}
+              </span>
+            </div>
+            
+            {/* 解説ボタン（正解時のみ表示） */}
+            {commandTip && (
+              <div className={styles.tipSection}>
+                <button 
+                  className={styles.tipButton}
+                  onClick={() => setShowTips(!showTips)}
+                >
+                  {showTips ? '📖 解説を閉じる' : '📖 解説・応用パターンを見る'}
+                </button>
+                
+                {showTips && (
+                  <div className={styles.tipContent}>
+                    <div className={styles.tipScene}>
+                      <span className={styles.tipLabel}>💼 実務での活用</span>
+                      <p>{commandTip.scene}</p>
+                    </div>
+                    <div className={styles.tipList}>
+                      <span className={styles.tipLabel}>🚀 応用パターン</span>
+                      <ul>
+                        {commandTip.tips.map((tip, idx) => (
+                          <li key={idx}><code>{tip}</code></li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
       
-      {/* ヒントセクション */}
+      {/* ヒントセクション（未正解時のみ） */}
       {taskHint && taskResult !== 'success' && (
         <div className={styles.hintSection}>
           <h4 className={styles.sectionTitle}>💡 ヒント</h4>
@@ -119,23 +147,6 @@ export function HintPanel() {
                 <code className={styles.syntax}>{commandDef.syntax}</code>
               </div>
             </div>
-          )}
-          
-          {expectation && (
-            <>
-              <button 
-                className={styles.hintButton}
-                onClick={() => setShowExtraHint(!showExtraHint)}
-              >
-                {showExtraHint ? '🔒 ヒントを隠す' : '🔑 もっとヒントを見る'}
-              </button>
-              
-              {showExtraHint && (
-                <div className={styles.extraHint}>
-                  <code>{getPartialHint()}</code>
-                </div>
-              )}
-            </>
           )}
         </div>
       )}
