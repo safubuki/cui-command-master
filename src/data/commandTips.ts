@@ -297,6 +297,174 @@ export const COMMAND_TIPS: Record<string, CommandTip> = {
       '~/.ssh/config で接続設定を管理すると楽',
     ],
   },
+  'nc': {
+    scene: 'ポート疎通確認やデバッグ用途。ファイアウォール調査にも。',
+    tips: [
+      'nc -zv host 80 → ポート開放チェック',
+      'nc -l 8080 → 簡易サーバーとして待ち受け',
+    ],
+  },
+  'traceroute': {
+    scene: 'パケットの経路を調査。ネットワーク遅延の原因特定に。',
+    tips: [
+      '各ホップの応答時間が表示される',
+      'Windows では tracert コマンド',
+    ],
+  },
+  'nslookup': {
+    scene: 'DNS名前解決の確認。ドメイン設定後の動作確認に。',
+    tips: [
+      'nslookup domain dns-server → 特定のDNSサーバーに問い合わせ',
+      'dig コマンドの方が詳細な情報が得られる',
+    ],
+  },
+  'tail': {
+    scene: 'ファイル末尾の表示。リアルタイムログ監視に必須。',
+    tips: [
+      'tail -f → ファイル更新をリアルタイム追跡',
+      'tail -n 50 → 最後の50行を表示',
+    ],
+  },
+  'head': {
+    scene: 'ファイル先頭の確認。大きなファイルの中身確認に。',
+    tips: [
+      'head -n 20 → 先頭20行を表示',
+      'head -c 100 → 先頭100バイトを表示',
+    ],
+  },
+  'find': {
+    scene: 'ファイル検索の最強コマンド。条件指定で何でも見つかる。',
+    tips: [
+      'find . -name "*.log" → 拡張子で検索',
+      'find . -mtime -7 → 7日以内に更新されたファイル',
+      'find . -type d → ディレクトリのみ検索',
+    ],
+  },
+  'chmod': {
+    scene: 'ファイル権限の変更。スクリプトの実行権限付与などに。',
+    tips: [
+      '755 = rwxr-xr-x（実行ファイル向け）',
+      '644 = rw-r--r--（設定ファイル向け）',
+      'chmod +x → 実行権限を追加',
+    ],
+  },
+  'chown': {
+    scene: 'ファイル所有者の変更。デプロイ時の権限調整に。',
+    tips: [
+      'chown user:group file → 所有者とグループを同時変更',
+      'chown -R → 再帰的に変更',
+    ],
+  },
+
+  // ========================================
+  // Git 追加コマンド
+  // ========================================
+  'git.switch': {
+    scene: 'ブランチ切り替えの新コマンド。checkout より直感的。',
+    tips: [
+      'git switch -c <name> → ブランチ作成と切り替えを同時に',
+      'git switch - → 直前のブランチに戻る',
+    ],
+  },
+  'git.merge': {
+    scene: 'ブランチの統合。feature開発後にmainに取り込む。',
+    tips: [
+      '--no-ff → マージコミットを必ず作成',
+      'コンフリクト時は手動で解決してからコミット',
+    ],
+  },
+
+  // ========================================
+  // Docker 追加コマンド
+  // ========================================
+  'docker.build': {
+    scene: 'Dockerfile からイメージをビルド。カスタムイメージ作成の基本。',
+    tips: [
+      '-t name:tag → 名前とタグを指定',
+      '--no-cache → キャッシュを使わずビルド',
+    ],
+  },
+  'docker.start': {
+    scene: '停止中のコンテナを起動。再起動時に使用。',
+    tips: [
+      'docker start -a → アタッチして起動（ログが見える）',
+      'docker start $(docker ps -aq) → 全コンテナを起動',
+    ],
+  },
+  'docker.restart': {
+    scene: 'コンテナの再起動。設定変更後の反映などに。',
+    tips: [
+      'stop → start を1コマンドで実行',
+      '-t 0 → 即座に再起動',
+    ],
+  },
+  'docker.compose.up': {
+    scene: '複数コンテナを一括起動。開発環境の立ち上げに。',
+    tips: [
+      '-d → バックグラウンドで起動',
+      '--build → イメージを再ビルドして起動',
+    ],
+  },
+  'docker.compose.down': {
+    scene: 'Compose環境を停止・削除。クリーンアップに。',
+    tips: [
+      '-v → ボリュームも削除',
+      '--rmi all → イメージも削除',
+    ],
+  },
+  'docker.compose.ps': {
+    scene: 'Compose管理のコンテナ一覧。サービス状態の確認に。',
+    tips: [
+      'docker ps との違いは Compose 管理分のみ表示',
+      '--services → サービス名のみ表示',
+    ],
+  },
+  'docker.compose.logs': {
+    scene: 'Compose環境のログ確認。複数サービスのログをまとめて見る。',
+    tips: [
+      '-f → リアルタイム追跡',
+      'service名を指定で特定サービスのみ',
+    ],
+  },
+  'docker.compose.exec': {
+    scene: 'Composeサービス内でコマンド実行。docker exec のCompose版。',
+    tips: [
+      'サービス名で指定できるのが便利',
+      'docker compose exec web bash → webサービスにシェル接続',
+    ],
+  },
+  'docker.compose.build': {
+    scene: 'Compose環境のイメージをビルド。Dockerfile変更後に。',
+    tips: [
+      '--no-cache → キャッシュを使わずビルド',
+      'サービス名を指定で特定サービスのみビルド',
+    ],
+  },
+
+  // ========================================
+  // Python 追加コマンド
+  // ========================================
+  'pip.install.requirements': {
+    scene: 'requirements.txt からの一括インストール。環境構築の定番。',
+    tips: [
+      '開発後は pip freeze > requirements.txt で更新',
+      'pip install -r requirements-dev.txt → 開発用依存関係',
+    ],
+  },
+  'pip.uninstall': {
+    scene: 'パッケージのアンインストール。依存関係の整理に。',
+    tips: [
+      '-y → 確認なしで削除',
+      'pip-autoremove で依存パッケージも一緒に削除',
+    ],
+  },
+  'python.run': {
+    scene: 'Pythonスクリプトの実行。開発・テストの基本。',
+    tips: [
+      'python -m pytest → モジュールとして実行',
+      'python -c "print(1+1)" → ワンライナー実行',
+    ],
+  },
 };
 
 /**

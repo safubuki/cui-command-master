@@ -20,6 +20,11 @@ const POOLS: Record<GeneratedDynamicKey, string[]> = {
   venv_name: ['myenv', 'venv', 'devenv', 'testenv', 'pyenv', 'env'],
   package: ['requests', 'numpy', 'flask', 'pandas', 'django', 'pytest'],
   pid: ['1234', '5678', '9012', '3456', '7890', '2345'],
+  service: ['web', 'db', 'api', 'redis', 'nginx', 'app'],
+  tag: ['v1.0', 'v2.0', 'latest', 'stable', 'dev', 'production'],
+  permission: ['755', '644', '700', '600', '777', '750'],
+  domain: ['example.com', 'api.local', 'test.dev', 'myapp.io', 'staging.net', 'dev.internal'],
+  script: ['main.py', 'app.py', 'server.py', 'run.py', 'manage.py', 'test.py'],
 };
 
 /**

@@ -781,16 +781,104 @@ function executeDocker(args: string[], ctx: ExecutionContext): CommandExecutionR
         };
       }
       if (composeCmd === 'down') {
+        const withVolume = args.includes('-v');
         return {
           output: [
             '[+] Running 2/2',
             ' ✔ Container app-web-1    Removed',
             ' ✔ Network app_default    Removed',
+            ...(withVolume ? [' ✔ Volume app_data        Removed'] : []),
+          ],
+          success: true,
+        };
+      }
+      if (composeCmd === 'ps') {
+        return {
+          output: [
+            'NAME                IMAGE          COMMAND                  SERVICE   CREATED        STATUS          PORTS',
+            'app-web-1           nginx:latest   "/docker-entrypoint.…"   web       2 hours ago    Up 2 hours      0.0.0.0:80->80/tcp',
+            'app-db-1            mysql:8        "docker-entrypoint.s…"   db        2 hours ago    Up 2 hours      3306/tcp',
+          ],
+          success: true,
+        };
+      }
+      if (composeCmd === 'logs') {
+        const service = args.find((a, i) => i > 1 && !a.startsWith('-')) || 'web';
+        return {
+          output: [
+            `${service}-1  | Starting service...`,
+            `${service}-1  | Service is ready`,
+            `${service}-1  | Listening on port 80`,
+          ],
+          success: true,
+        };
+      }
+      if (composeCmd === 'exec') {
+        return {
+          output: [],
+          success: true,
+        };
+      }
+      if (composeCmd === 'build') {
+        return {
+          output: [
+            '[+] Building 12.5s (10/10) FINISHED',
+            ' => [internal] load build definition from Dockerfile',
+            ' => [internal] load .dockerignore',
+            ' => [internal] load metadata for docker.io/library/node:20',
+            ' => CACHED [1/5] FROM docker.io/library/node:20',
+            ' => [2/5] WORKDIR /app',
+            ' => [3/5] COPY package*.json ./',
+            ' => [4/5] RUN npm install',
+            ' => [5/5] COPY . .',
+            ' => exporting to image',
           ],
           success: true,
         };
       }
       return { output: [], success: true };
+    
+    case 'build':
+      const tagIndex = args.indexOf('-t');
+      const imageName = tagIndex >= 0 ? args[tagIndex + 1] : 'myapp:latest';
+      return {
+        output: [
+          '[+] Building 15.3s (12/12) FINISHED',
+          ' => [internal] load build definition from Dockerfile',
+          ' => [internal] load .dockerignore',
+          ' => [1/6] FROM docker.io/library/node:20',
+          ' => [2/6] WORKDIR /app',
+          ' => [3/6] COPY package*.json ./',
+          ' => [4/6] RUN npm install',
+          ' => [5/6] COPY . .',
+          ' => [6/6] RUN npm run build',
+          ' => exporting to image',
+          ` => => naming to docker.io/library/${imageName}`,
+        ],
+        success: true,
+      };
+    
+    case 'start':
+      const containerToStart = args[0] || '';
+      const newVfsForStart = { ...ctx.vfs };
+      if (newVfsForStart.virtualEnv && containerToStart) {
+        newVfsForStart.virtualEnv = {
+          ...newVfsForStart.virtualEnv,
+          runningContainers: [...newVfsForStart.virtualEnv.runningContainers, containerToStart],
+        };
+      }
+      return {
+        output: [containerToStart],
+        success: true,
+        newVfs: newVfsForStart,
+      };
+    
+    case 'restart':
+      const containerToRestart = args[0] || '';
+      return {
+        output: [containerToRestart],
+        success: true,
+      };
     
     default:
       return {
@@ -1181,6 +1269,170 @@ function executeTop(args: string[], ctx: ExecutionContext): CommandExecutionResu
   };
 }
 
+/**
+ * tailコマンドの実行（シミュレーション）
+ */
+function executeTail(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  const filename = args.find(a => !a.startsWith('-')) || '';
+  const follow = args.includes('-f');
+  
+  if (!filename) {
+    return {
+      output: ['tail: ファイル名を指定してください'],
+      success: false,
+    };
+  }
+  
+  const node = vfs.getNode(ctx.vfs, filename);
+  if (!node) {
+    return {
+      output: [`tail: ${filename}: そのようなファイルやディレクトリはありません`],
+      success: false,
+    };
+  }
+  
+  const content = node.content || '';
+  const lines = content.split('\n').slice(-10);
+  
+  return {
+    output: follow ? [...lines, '(リアルタイム監視中... Ctrl+C で終了)'] : lines,
+    success: true,
+  };
+}
+
+/**
+ * headコマンドの実行（シミュレーション）
+ */
+function executeHead(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  const filename = args.find(a => !a.startsWith('-')) || '';
+  
+  if (!filename) {
+    return {
+      output: ['head: ファイル名を指定してください'],
+      success: false,
+    };
+  }
+  
+  const node = vfs.getNode(ctx.vfs, filename);
+  if (!node) {
+    return {
+      output: [`head: ${filename}: そのようなファイルやディレクトリはありません`],
+      success: false,
+    };
+  }
+  
+  const content = node.content || '';
+  const lines = content.split('\n').slice(0, 10);
+  
+  return {
+    output: lines,
+    success: true,
+  };
+}
+
+/**
+ * findコマンドの実行（シミュレーション）
+ */
+function executeFind(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  const path = args[0] || '.';
+  const nameIndex = args.indexOf('-name');
+  const pattern = nameIndex >= 0 ? args[nameIndex + 1] : '*';
+  
+  // シミュレーション: ダミーの結果を返す
+  return {
+    output: [
+      `${path}/config.json`,
+      `${path}/src/main.py`,
+      `${path}/logs/app.log`,
+    ],
+    success: true,
+  };
+}
+
+/**
+ * chmodコマンドの実行（シミュレーション）
+ */
+function executeChmod(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length < 2) {
+    return {
+      output: ['chmod: 権限とファイル名を指定してください'],
+      success: false,
+    };
+  }
+  
+  return {
+    output: [],
+    success: true,
+  };
+}
+
+/**
+ * chownコマンドの実行（シミュレーション）
+ */
+function executeChown(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length < 2) {
+    return {
+      output: ['chown: 所有者とファイル名を指定してください'],
+      success: false,
+    };
+  }
+  
+  return {
+    output: [],
+    success: true,
+  };
+}
+
+/**
+ * tracerouteコマンドの実行（シミュレーション）
+ */
+function executeTraceroute(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length === 0) {
+    return {
+      output: ['traceroute: ホストを指定してください'],
+      success: false,
+    };
+  }
+  
+  const host = args[0];
+  
+  return {
+    output: [
+      `traceroute to ${host}, 30 hops max, 60 byte packets`,
+      ` 1  192.168.1.1 (192.168.1.1)  1.234 ms  1.123 ms  1.089 ms`,
+      ` 2  10.0.0.1 (10.0.0.1)  5.678 ms  5.456 ms  5.321 ms`,
+      ` 3  ${host} (${host})  10.123 ms  10.089 ms  10.045 ms`,
+    ],
+    success: true,
+  };
+}
+
+/**
+ * nslookupコマンドの実行（シミュレーション）
+ */
+function executeNslookup(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  if (args.length === 0) {
+    return {
+      output: ['nslookup: ホストを指定してください'],
+      success: false,
+    };
+  }
+  
+  const host = args[0];
+  
+  return {
+    output: [
+      'Server:		8.8.8.8',
+      'Address:	8.8.8.8#53',
+      '',
+      'Non-authoritative answer:',
+      `Name:	${host}`,
+      `Address: 93.184.216.34`,
+    ],
+    success: true,
+  };
+}
+
 /** コマンドハンドラマップ */
 const COMMAND_HANDLERS: Record<string, CommandHandler> = {
   ls: executeLs,
@@ -1193,6 +1445,11 @@ const COMMAND_HANDLERS: Record<string, CommandHandler> = {
   mv: executeMv,
   cat: executeCat,
   grep: executeGrep,
+  tail: executeTail,
+  head: executeHead,
+  find: executeFind,
+  chmod: executeChmod,
+  chown: executeChown,
   ps: executePs,
   top: executeTop,
   df: executeDf,
@@ -1210,6 +1467,8 @@ const COMMAND_HANDLERS: Record<string, CommandHandler> = {
   scp: executeScp,
   wget: executeWget,
   curl: executeCurl,
+  traceroute: executeTraceroute,
+  nslookup: executeNslookup,
   exit: executeExit,
 };
 

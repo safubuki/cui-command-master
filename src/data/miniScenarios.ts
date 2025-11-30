@@ -149,6 +149,75 @@ const LINUX_SCENARIOS: MiniScenario[] = [
     },
   },
   {
+    id: 'linux-log-investigation',
+    title: 'ログ調査',
+    description: 'tail, grep でログを調べる',
+    category: 'Linux',
+    difficulty: 2,
+    requiredVars: ['filename'],
+    steps: [
+      {
+        taskTemplate: '`{filename}` の末尾10行を表示しなさい',
+        formatHint: 'tail <ファイル名>',
+        expectation: 'tail {filename}',
+        commandId: 'tail',
+      },
+      {
+        taskTemplate: '`{filename}` から "ERROR" を含む行を検索しなさい',
+        formatHint: 'grep <パターン> <ファイル>',
+        expectation: 'grep ERROR {filename}',
+        commandId: 'grep',
+      },
+      {
+        taskTemplate: '`{filename}` をリアルタイム監視しなさい',
+        formatHint: 'tail -f <ファイル名>',
+        expectation: 'tail -f {filename}',
+        commandId: 'tail',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      const filename = dynamic.filename || 'app.log';
+      vfs = addFile(vfs, `${homeDir}/${filename}`, 
+        'INFO: Server started\nINFO: Request received\nERROR: Database connection failed\nINFO: Retrying...\nERROR: Timeout after 30s\nINFO: Connection restored');
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'linux-permission',
+    title: '権限設定',
+    description: 'chmod でファイル権限を変更',
+    category: 'Linux',
+    difficulty: 2,
+    requiredVars: ['script', 'permission'],
+    steps: [
+      {
+        taskTemplate: 'ファイル一覧を詳細表示しなさい',
+        formatHint: 'ls -la',
+        expectation: 'ls -la',
+        commandId: 'ls',
+      },
+      {
+        taskTemplate: '`{script}` に権限 `{permission}` を設定しなさい',
+        formatHint: 'chmod <権限> <ファイル名>',
+        expectation: 'chmod {permission} {script}',
+        commandId: 'chmod',
+      },
+      {
+        taskTemplate: '権限が変更されたことを確認しなさい',
+        formatHint: 'ls -la',
+        expectation: 'ls -la',
+        commandId: 'ls',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      const script = dynamic.script || 'deploy.sh';
+      vfs = touch(vfs, `${homeDir}/${script}`);
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
     id: 'linux-move-rename',
     title: 'ファイル移動・リネーム',
     description: 'mv でファイルを移動・名前変更',
@@ -265,7 +334,7 @@ const GIT_SCENARIOS: MiniScenario[] = [
   },
   {
     id: 'git-branch-workflow',
-    title: 'ブランチ操作',
+    title: 'ブランチ作成と切り替え',
     description: 'branch, checkout でブランチを操作',
     category: 'Git',
     difficulty: 2,
@@ -294,6 +363,45 @@ const GIT_SCENARIOS: MiniScenario[] = [
       vfs = mkdir(vfs, `${homeDir}/project`);
       vfs = mkdir(vfs, `${homeDir}/project/.git`);
       vfs.currentPath = `${homeDir}/project`;
+      return vfs;
+    },
+  },
+  {
+    id: 'git-merge-workflow',
+    title: 'ブランチマージ',
+    description: 'ブランチをマージする実務フロー',
+    category: 'Git',
+    difficulty: 2,
+    requiredVars: ['branch'],
+    steps: [
+      {
+        taskTemplate: 'main ブランチに切り替えなさい',
+        formatHint: 'git checkout <ブランチ名>',
+        expectation: 'git checkout main',
+        commandId: 'git.checkout',
+      },
+      {
+        taskTemplate: '`{branch}` ブランチをマージしなさい',
+        formatHint: 'git merge <ブランチ名>',
+        expectation: 'git merge {branch}',
+        commandId: 'git.merge',
+      },
+      {
+        taskTemplate: 'リモートにプッシュしなさい',
+        formatHint: 'git push',
+        expectation: 'git push',
+        commandId: 'git.push',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs = mkdir(vfs, `${homeDir}/project`);
+      vfs = mkdir(vfs, `${homeDir}/project/.git`);
+      vfs.currentPath = `${homeDir}/project`;
+      // 開発ブランチを作成済みに
+      if (vfs.virtualEnv && dynamic.branch) {
+        vfs.virtualEnv.branches = ['main', dynamic.branch];
+        vfs.virtualEnv.currentBranch = dynamic.branch;
+      }
       return vfs;
     },
   },
@@ -437,6 +545,39 @@ const DOCKER_SCENARIOS: MiniScenario[] = [
     },
   },
   {
+    id: 'docker-build-workflow',
+    title: 'イメージビルド',
+    description: 'build でカスタムイメージを作成',
+    category: 'Docker',
+    difficulty: 2,
+    requiredVars: ['image', 'tag'],
+    steps: [
+      {
+        taskTemplate: '`{image}:{tag}` という名前でイメージをビルドしなさい',
+        formatHint: 'docker build -t <イメージ名>:<タグ> <パス>',
+        expectation: 'docker build -t {image}:{tag} .',
+        commandId: 'docker.build',
+      },
+      {
+        taskTemplate: 'ビルドしたイメージを確認しなさい',
+        formatHint: 'docker images',
+        expectation: 'docker images',
+        commandId: 'docker.images',
+      },
+      {
+        taskTemplate: 'ビルドしたイメージからコンテナを起動しなさい',
+        formatHint: 'docker run <イメージ>',
+        expectation: 'docker run {image}:{tag}',
+        commandId: 'docker.run',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs = touch(vfs, `${homeDir}/Dockerfile`);
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
     id: 'docker-container-debug',
     title: 'コンテナデバッグ',
     description: 'logs, exec でコンテナを調査',
@@ -505,6 +646,106 @@ const DOCKER_SCENARIOS: MiniScenario[] = [
       if (vfs.virtualEnv && dynamic.container) {
         vfs.virtualEnv.runningContainers = [dynamic.container];
       }
+      return vfs;
+    },
+  },
+  {
+    id: 'docker-compose-basic',
+    title: 'Docker Compose 基本',
+    description: 'up -d, ps, down の基本フロー',
+    category: 'Docker',
+    difficulty: 2,
+    requiredVars: [],
+    steps: [
+      {
+        taskTemplate: 'Composeでサービスをバックグラウンド起動しなさい',
+        formatHint: 'docker compose up -d',
+        expectation: 'docker compose up -d',
+        commandId: 'docker.compose.up',
+      },
+      {
+        taskTemplate: 'サービスの状態を確認しなさい',
+        formatHint: 'docker compose ps',
+        expectation: 'docker compose ps',
+        commandId: 'docker.compose.ps',
+      },
+      {
+        taskTemplate: 'サービスを停止・削除しなさい',
+        formatHint: 'docker compose down',
+        expectation: 'docker compose down',
+        commandId: 'docker.compose.down',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs = touch(vfs, `${homeDir}/docker-compose.yml`);
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'docker-compose-debug',
+    title: 'Compose トラブル調査',
+    description: 'logs, exec でサービスを調査',
+    category: 'Docker',
+    difficulty: 3,
+    requiredVars: ['service'],
+    steps: [
+      {
+        taskTemplate: 'サービスの状態を確認しなさい',
+        formatHint: 'docker compose ps',
+        expectation: 'docker compose ps',
+        commandId: 'docker.compose.ps',
+      },
+      {
+        taskTemplate: '`{service}` サービスのログをリアルタイム監視しなさい',
+        formatHint: 'docker compose logs -f <サービス名>',
+        expectation: 'docker compose logs -f {service}',
+        commandId: 'docker.compose.logs',
+      },
+      {
+        taskTemplate: '`{service}` サービス内でbashを起動しなさい',
+        formatHint: 'docker compose exec <サービス名> bash',
+        expectation: 'docker compose exec {service} bash',
+        commandId: 'docker.compose.exec',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs = touch(vfs, `${homeDir}/docker-compose.yml`);
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'docker-compose-rebuild',
+    title: 'Compose 再ビルド',
+    description: 'build, up でサービスを更新',
+    category: 'Docker',
+    difficulty: 3,
+    requiredVars: [],
+    steps: [
+      {
+        taskTemplate: 'サービスをビルドしなさい',
+        formatHint: 'docker compose build',
+        expectation: 'docker compose build',
+        commandId: 'docker.compose.build',
+      },
+      {
+        taskTemplate: 'サービスをバックグラウンド起動しなさい',
+        formatHint: 'docker compose up -d',
+        expectation: 'docker compose up -d',
+        commandId: 'docker.compose.up',
+      },
+      {
+        taskTemplate: 'ボリュームも含めてきれいに削除しなさい',
+        formatHint: 'docker compose down -v',
+        expectation: 'docker compose down -v',
+        commandId: 'docker.compose.down',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs = touch(vfs, `${homeDir}/docker-compose.yml`);
+      vfs = touch(vfs, `${homeDir}/Dockerfile`);
+      vfs.currentPath = homeDir;
       return vfs;
     },
   },
@@ -605,6 +846,67 @@ const PYTHON_SCENARIOS: MiniScenario[] = [
       return vfs;
     },
   },
+  {
+    id: 'python-project-setup',
+    title: 'プロジェクト環境構築',
+    description: 'venv作成 → requirements から一括インストール',
+    category: 'Python',
+    difficulty: 2,
+    requiredVars: ['venv_name'],
+    steps: [
+      {
+        taskTemplate: '`{venv_name}` という名前の仮想環境を作成しなさい',
+        formatHint: 'python -m venv <名前>',
+        expectation: 'python -m venv {venv_name}',
+        commandId: 'python.venv',
+      },
+      {
+        taskTemplate: '仮想環境を有効化しなさい',
+        formatHint: 'source <venv名>/bin/activate',
+        expectation: 'source {venv_name}/bin/activate',
+        commandId: 'source.activate',
+      },
+      {
+        taskTemplate: 'requirements.txt から一括インストールしなさい',
+        formatHint: 'pip install -r <ファイル名>',
+        expectation: 'pip install -r requirements.txt',
+        commandId: 'pip.install.requirements',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs = addFile(vfs, `${homeDir}/requirements.txt`, 'flask==2.3.0\nrequests==2.31.0\npytest==7.4.0');
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'python-run-script',
+    title: 'スクリプト実行',
+    description: 'Python スクリプトを実行する',
+    category: 'Python',
+    difficulty: 1,
+    requiredVars: ['script'],
+    steps: [
+      {
+        taskTemplate: 'ファイル一覧を確認しなさい',
+        formatHint: 'ls',
+        expectation: 'ls',
+        commandId: 'ls',
+      },
+      {
+        taskTemplate: '`{script}` を実行しなさい',
+        formatHint: 'python <スクリプト名>',
+        expectation: 'python {script}',
+        commandId: 'python.run',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      const script = dynamic.script || 'main.py';
+      vfs = addFile(vfs, `${homeDir}/${script}`, 'print("Hello, World!")');
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
 ];
 
 // ========================================
@@ -688,6 +990,102 @@ const NETWORK_SCENARIOS: MiniScenario[] = [
     setupVfs: (vfs, dynamic, homeDir) => {
       const filename = dynamic.filename || 'data.txt';
       vfs = touch(vfs, `${homeDir}/${filename}`);
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'network-dns-lookup',
+    title: 'DNS診断',
+    description: 'nslookup でドメイン名解決',
+    category: 'Network',
+    difficulty: 2,
+    requiredVars: ['domain'],
+    steps: [
+      {
+        taskTemplate: '`{domain}` の名前解決を行いなさい',
+        formatHint: 'nslookup <ドメイン>',
+        expectation: 'nslookup {domain}',
+        commandId: 'nslookup',
+      },
+      {
+        taskTemplate: '`{domain}` への経路を確認しなさい',
+        formatHint: 'traceroute <ドメイン>',
+        expectation: 'traceroute {domain}',
+        commandId: 'traceroute',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'network-full-diagnostics',
+    title: 'ネットワーク総合診断',
+    description: 'ping → traceroute → nslookup → curl',
+    category: 'Network',
+    difficulty: 3,
+    requiredVars: ['domain'],
+    steps: [
+      {
+        taskTemplate: '`{domain}` への疎通を確認しなさい',
+        formatHint: 'ping <ドメイン>',
+        expectation: 'ping {domain}',
+        commandId: 'ping',
+      },
+      {
+        taskTemplate: '`{domain}` への経路を確認しなさい',
+        formatHint: 'traceroute <ドメイン>',
+        expectation: 'traceroute {domain}',
+        commandId: 'traceroute',
+      },
+      {
+        taskTemplate: '`{domain}` の名前解決を行いなさい',
+        formatHint: 'nslookup <ドメイン>',
+        expectation: 'nslookup {domain}',
+        commandId: 'nslookup',
+      },
+      {
+        taskTemplate: 'http://{domain} に GET リクエストを送りなさい',
+        formatHint: 'curl <URL>',
+        expectation: 'curl http://{domain}',
+        commandId: 'curl.get',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
+      vfs.currentPath = homeDir;
+      return vfs;
+    },
+  },
+  {
+    id: 'network-port-check',
+    title: 'ポートスキャン',
+    description: 'nc でポート確認',
+    category: 'Network',
+    difficulty: 2,
+    requiredVars: ['ip'],
+    steps: [
+      {
+        taskTemplate: '`{ip}` への疎通を確認しなさい',
+        formatHint: 'ping <IPアドレス>',
+        expectation: 'ping {ip}',
+        commandId: 'ping',
+      },
+      {
+        taskTemplate: '`{ip}` のポート 80 が開いているか確認しなさい',
+        formatHint: 'nc -zv <IP> <ポート>',
+        expectation: 'nc -zv {ip} 80',
+        commandId: 'nc',
+      },
+      {
+        taskTemplate: '`{ip}` のポート 443 が開いているか確認しなさい',
+        formatHint: 'nc -zv <IP> <ポート>',
+        expectation: 'nc -zv {ip} 443',
+        commandId: 'nc',
+      },
+    ],
+    setupVfs: (vfs, dynamic, homeDir) => {
       vfs.currentPath = homeDir;
       return vfs;
     },

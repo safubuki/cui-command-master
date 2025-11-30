@@ -17,7 +17,12 @@ export type GeneratedDynamicKey =
   | 'commit_msg'    // コミットメッセージ
   | 'venv_name'     // 仮想環境名 (例: myenv, venv)
   | 'package'       // パッケージ名 (例: requests, numpy)
-  | 'pid';          // プロセスID
+  | 'pid'           // プロセスID
+  | 'service'       // Docker Composeサービス名 (例: web, db)
+  | 'tag'           // Dockerイメージタグ (例: v1.0, latest)
+  | 'permission'    // ファイル権限 (例: 755, 644)
+  | 'domain'        // ドメイン名 (例: example.com, api.local)
+  | 'script';       // スクリプトファイル名 (例: main.py, app.py)
 
 /** 動的変数のキー種別（内部キー含む） */
 export type DynamicKey = GeneratedDynamicKey | '_homeDir';

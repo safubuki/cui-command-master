@@ -282,6 +282,117 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
     }
   },
   
+  'tail': {
+    id: 'tail',
+    command: 'tail',
+    category: 'Linux',
+    syntax: 'tail [-n <num>] [-f] <file>',
+    formatHint: 'tail [-f] <ファイル名>',
+    description: 'ファイルの末尾を表示します。-f: リアルタイム監視、-n: 表示行数指定',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'tail') {
+        return error('コマンドが違います', 'command');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 2) {
+        return error('ファイル名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'head': {
+    id: 'head',
+    command: 'head',
+    category: 'Linux',
+    syntax: 'head [-n <num>] <file>',
+    formatHint: 'head [-n <行数>] <ファイル名>',
+    description: 'ファイルの先頭を表示します。-n: 表示行数指定',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'head') {
+        return error('コマンドが違います', 'command');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 2) {
+        return error('ファイル名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'grep': {
+    id: 'grep',
+    command: 'grep',
+    category: 'Linux',
+    syntax: 'grep <pattern> <file>',
+    formatHint: 'grep <パターン> <ファイル名>',
+    description: 'ファイル内の文字列を検索します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'grep') {
+        return error('コマンドが違います', 'command');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 3) {
+        return error('検索パターンとファイル名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'find': {
+    id: 'find',
+    command: 'find',
+    category: 'Linux',
+    syntax: 'find <path> -name <pattern>',
+    formatHint: 'find <パス> -name <パターン>',
+    description: 'ファイルやディレクトリを検索します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'find') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 2) {
+        return error('検索パスを指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'chmod': {
+    id: 'chmod',
+    command: 'chmod',
+    category: 'Linux',
+    syntax: 'chmod <mode> <file>',
+    formatHint: 'chmod <権限> <ファイル名>',
+    description: 'ファイルの権限を変更します（例: 755, 644）',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'chmod') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 3) {
+        return error('権限とファイル名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'chown': {
+    id: 'chown',
+    command: 'chown',
+    category: 'Linux',
+    syntax: 'chown <user>:<group> <file>',
+    formatHint: 'chown <ユーザー>:<グループ> <ファイル>',
+    description: 'ファイルの所有者を変更します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'chown') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 3) {
+        return error('所有者とファイル名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
   // ============================================
   // Linux - システム
   // ============================================
@@ -440,6 +551,79 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
     }
   },
   
+  'curl': {
+    id: 'curl',
+    command: 'curl',
+    category: 'Network',
+    syntax: 'curl [-o <file>] <url>',
+    formatHint: 'curl <URL>',
+    description: 'URLからデータを取得します。-o: ファイルに保存',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'curl') {
+        return error('コマンドが違います', 'command');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 2) {
+        return error('URLを指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'wget': {
+    id: 'wget',
+    command: 'wget',
+    category: 'Network',
+    syntax: 'wget <url>',
+    formatHint: 'wget <URL>',
+    description: 'URLからファイルをダウンロードします',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'wget') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 2) {
+        return error('URLを指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'traceroute': {
+    id: 'traceroute',
+    command: 'traceroute',
+    category: 'Network',
+    syntax: 'traceroute <host>',
+    formatHint: 'traceroute <ホスト名>',
+    description: '宛先までのネットワーク経路を表示します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'traceroute') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 2) {
+        return error('ホスト名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'nslookup': {
+    id: 'nslookup',
+    command: 'nslookup',
+    category: 'Network',
+    syntax: 'nslookup <host>',
+    formatHint: 'nslookup <ホスト名>',
+    description: 'ホスト名のDNS情報を調べます',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'nslookup') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 2) {
+        return error('ホスト名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
   // ============================================
   // Git
   // ============================================
@@ -568,6 +752,131 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
     }
   },
   
+  'git.branch': {
+    id: 'git.branch',
+    command: 'git',
+    subcommand: 'branch',
+    category: 'Git',
+    syntax: 'git branch',
+    formatHint: 'git branch',
+    description: 'ブランチ一覧を表示します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'git') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'branch') {
+        return error('サブコマンドが違います。期待: branch', 'subcommand');
+      }
+      return success();
+    }
+  },
+  
+  'git.checkout': {
+    id: 'git.checkout',
+    command: 'git',
+    subcommand: 'checkout',
+    category: 'Git',
+    syntax: 'git checkout [-b] <branch>',
+    formatHint: 'git checkout [-b] <ブランチ名>',
+    description: 'ブランチを切り替えます。-b: 新規作成して切り替え',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'git') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'checkout') {
+        return error('サブコマンドが違います。期待: checkout', 'subcommand');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 3) {
+        return error('ブランチ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'git.switch': {
+    id: 'git.switch',
+    command: 'git',
+    subcommand: 'switch',
+    category: 'Git',
+    syntax: 'git switch [-c] <branch>',
+    formatHint: 'git switch [-c] <ブランチ名>',
+    description: 'ブランチを切り替えます。-c: 新規作成して切り替え',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'git') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'switch') {
+        return error('サブコマンドが違います。期待: switch', 'subcommand');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 3) {
+        return error('ブランチ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'git.merge': {
+    id: 'git.merge',
+    command: 'git',
+    subcommand: 'merge',
+    category: 'Git',
+    syntax: 'git merge <branch>',
+    formatHint: 'git merge <ブランチ名>',
+    description: '指定したブランチを現在のブランチにマージします',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'git') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'merge') {
+        return error('サブコマンドが違います。期待: merge', 'subcommand');
+      }
+      if (tokens.length < 3) {
+        return error('マージするブランチ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'git.diff': {
+    id: 'git.diff',
+    command: 'git',
+    subcommand: 'diff',
+    category: 'Git',
+    syntax: 'git diff [--staged]',
+    formatHint: 'git diff [--staged]',
+    description: '変更差分を表示します。--staged: ステージ済みの差分',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'git') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'diff') {
+        return error('サブコマンドが違います。期待: diff', 'subcommand');
+      }
+      return success();
+    }
+  },
+  
+  'git.stash': {
+    id: 'git.stash',
+    command: 'git',
+    subcommand: 'stash',
+    category: 'Git',
+    syntax: 'git stash [list|pop]',
+    formatHint: 'git stash [list|pop]',
+    description: '変更を一時退避します。list: 一覧表示、pop: 復元',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'git') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'stash') {
+        return error('サブコマンドが違います。期待: stash', 'subcommand');
+      }
+      return success();
+    }
+  },
+  
   // ============================================
   // Docker
   // ============================================
@@ -680,6 +989,159 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
     }
   },
   
+  'docker.images': {
+    id: 'docker.images',
+    command: 'docker',
+    subcommand: 'images',
+    category: 'Docker',
+    syntax: 'docker images',
+    formatHint: 'docker images',
+    description: 'ローカルのイメージ一覧を表示します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'images') {
+        return error('サブコマンドが違います。期待: images', 'subcommand');
+      }
+      return success();
+    }
+  },
+  
+  'docker.pull': {
+    id: 'docker.pull',
+    command: 'docker',
+    subcommand: 'pull',
+    category: 'Docker',
+    syntax: 'docker pull <image>',
+    formatHint: 'docker pull <イメージ名>',
+    description: 'Docker Hubからイメージをダウンロードします',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'pull') {
+        return error('サブコマンドが違います。期待: pull', 'subcommand');
+      }
+      if (tokens.length < 3) {
+        return error('イメージ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'docker.logs': {
+    id: 'docker.logs',
+    command: 'docker',
+    subcommand: 'logs',
+    category: 'Docker',
+    syntax: 'docker logs [-f] <container>',
+    formatHint: 'docker logs [-f] <コンテナ名>',
+    description: 'コンテナのログを表示します。-f: リアルタイム監視',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'logs') {
+        return error('サブコマンドが違います。期待: logs', 'subcommand');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 3) {
+        return error('コンテナ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'docker.exec': {
+    id: 'docker.exec',
+    command: 'docker',
+    subcommand: 'exec',
+    category: 'Docker',
+    syntax: 'docker exec -it <container> <command>',
+    formatHint: 'docker exec -it <コンテナ名> <コマンド>',
+    description: 'コンテナ内でコマンドを実行します。-it: 対話モード',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'exec') {
+        return error('サブコマンドが違います。期待: exec', 'subcommand');
+      }
+      const args = tokens.filter(t => !t.startsWith('-'));
+      if (args.length < 4) {
+        return error('コンテナ名と実行コマンドを指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'docker.build': {
+    id: 'docker.build',
+    command: 'docker',
+    subcommand: 'build',
+    category: 'Docker',
+    syntax: 'docker build -t <name>:<tag> <path>',
+    formatHint: 'docker build -t <イメージ名>:<タグ> <パス>',
+    description: 'Dockerfileからイメージをビルドします',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'build') {
+        return error('サブコマンドが違います。期待: build', 'subcommand');
+      }
+      if (!tokens.includes('-t')) {
+        return error('-t オプションでイメージ名を指定してください', 'option');
+      }
+      return success();
+    }
+  },
+  
+  'docker.start': {
+    id: 'docker.start',
+    command: 'docker',
+    subcommand: 'start',
+    category: 'Docker',
+    syntax: 'docker start <container>',
+    formatHint: 'docker start <コンテナ名>',
+    description: '停止中のコンテナを起動します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'start') {
+        return error('サブコマンドが違います。期待: start', 'subcommand');
+      }
+      if (tokens.length < 3) {
+        return error('コンテナ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'docker.restart': {
+    id: 'docker.restart',
+    command: 'docker',
+    subcommand: 'restart',
+    category: 'Docker',
+    syntax: 'docker restart <container>',
+    formatHint: 'docker restart <コンテナ名>',
+    description: 'コンテナを再起動します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'restart') {
+        return error('サブコマンドが違います。期待: restart', 'subcommand');
+      }
+      if (tokens.length < 3) {
+        return error('コンテナ名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
   'docker.compose.up': {
     id: 'docker.compose.up',
     command: 'docker',
@@ -707,9 +1169,9 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
     command: 'docker',
     subcommand: 'compose',
     category: 'Docker',
-    syntax: 'docker compose down',
-    formatHint: 'docker compose down',
-    description: 'Docker Composeで定義されたサービスを停止・削除します',
+    syntax: 'docker compose down [-v]',
+    formatHint: 'docker compose down [-v]',
+    description: 'Docker Composeで定義されたサービスを停止・削除します。-v: ボリュームも削除',
     check(tokens, ctx) {
       if (tokens[0] !== 'docker') {
         return error('コマンドが違います', 'command');
@@ -719,6 +1181,97 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
       }
       if (tokens[2] !== 'down') {
         return error('compose の後に down を指定してください', 'argument');
+      }
+      return success();
+    }
+  },
+  
+  'docker.compose.ps': {
+    id: 'docker.compose.ps',
+    command: 'docker',
+    subcommand: 'compose',
+    category: 'Docker',
+    syntax: 'docker compose ps',
+    formatHint: 'docker compose ps',
+    description: 'Docker Composeのサービス状態を表示します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'compose') {
+        return error('サブコマンドが違います。期待: compose', 'subcommand');
+      }
+      if (tokens[2] !== 'ps') {
+        return error('compose の後に ps を指定してください', 'argument');
+      }
+      return success();
+    }
+  },
+  
+  'docker.compose.logs': {
+    id: 'docker.compose.logs',
+    command: 'docker',
+    subcommand: 'compose',
+    category: 'Docker',
+    syntax: 'docker compose logs [-f] [service]',
+    formatHint: 'docker compose logs [-f] [サービス名]',
+    description: 'Docker Composeのログを表示します。-f: リアルタイム監視',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'compose') {
+        return error('サブコマンドが違います。期待: compose', 'subcommand');
+      }
+      if (tokens[2] !== 'logs') {
+        return error('compose の後に logs を指定してください', 'argument');
+      }
+      return success();
+    }
+  },
+  
+  'docker.compose.exec': {
+    id: 'docker.compose.exec',
+    command: 'docker',
+    subcommand: 'compose',
+    category: 'Docker',
+    syntax: 'docker compose exec <service> <command>',
+    formatHint: 'docker compose exec <サービス名> <コマンド>',
+    description: 'Docker Composeのサービス内でコマンドを実行します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'compose') {
+        return error('サブコマンドが違います。期待: compose', 'subcommand');
+      }
+      if (tokens[2] !== 'exec') {
+        return error('compose の後に exec を指定してください', 'argument');
+      }
+      if (tokens.length < 5) {
+        return error('サービス名とコマンドを指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'docker.compose.build': {
+    id: 'docker.compose.build',
+    command: 'docker',
+    subcommand: 'compose',
+    category: 'Docker',
+    syntax: 'docker compose build [service]',
+    formatHint: 'docker compose build [サービス名]',
+    description: 'Docker Composeのサービスをビルドします',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'docker') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'compose') {
+        return error('サブコマンドが違います。期待: compose', 'subcommand');
+      }
+      if (tokens[2] !== 'build') {
+        return error('compose の後に build を指定してください', 'argument');
       }
       return success();
     }
@@ -810,6 +1363,80 @@ export const COMMAND_DEFS: Record<string, CommandDef> = {
       }
       if (tokens[1] !== 'list') {
         return error('サブコマンドが違います。期待: list', 'subcommand');
+      }
+      return success();
+    }
+  },
+  
+  'pip.freeze': {
+    id: 'pip.freeze',
+    command: 'pip',
+    subcommand: 'freeze',
+    category: 'Python',
+    syntax: 'pip freeze',
+    formatHint: 'pip freeze',
+    description: 'パッケージ一覧をrequirements.txt形式で出力します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'pip') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'freeze') {
+        return error('サブコマンドが違います。期待: freeze', 'subcommand');
+      }
+      return success();
+    }
+  },
+  
+  'pip.install.requirements': {
+    id: 'pip.install.requirements',
+    command: 'pip',
+    subcommand: 'install',
+    category: 'Python',
+    syntax: 'pip install -r requirements.txt',
+    formatHint: 'pip install -r <ファイル名>',
+    description: 'requirements.txtからパッケージを一括インストールします',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'pip') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens[1] !== 'install') {
+        return error('サブコマンドが違います。期待: install', 'subcommand');
+      }
+      if (!tokens.includes('-r')) {
+        return error('-r オプションが必要です', 'option');
+      }
+      return success();
+    }
+  },
+  
+  'python.run': {
+    id: 'python.run',
+    command: 'python',
+    category: 'Python',
+    syntax: 'python <script.py>',
+    formatHint: 'python <スクリプト名>',
+    description: 'Pythonスクリプトを実行します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'python') {
+        return error('コマンドが違います', 'command');
+      }
+      if (tokens.length < 2) {
+        return error('スクリプトファイル名を指定してください', 'missing');
+      }
+      return success();
+    }
+  },
+  
+  'deactivate': {
+    id: 'deactivate',
+    command: 'deactivate',
+    category: 'Python',
+    syntax: 'deactivate',
+    formatHint: 'deactivate',
+    description: '仮想環境を無効化します',
+    check(tokens, ctx) {
+      if (tokens[0] !== 'deactivate') {
+        return error('コマンドが違います', 'command');
       }
       return success();
     }
