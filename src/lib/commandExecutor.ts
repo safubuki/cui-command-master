@@ -924,6 +924,24 @@ function executeSource(args: string[], ctx: ExecutionContext): CommandExecutionR
     };
   }
   
+  // venv/bin/activate パターンを検出して仮想環境をアクティブに
+  const match = activatePath.match(/([^\/]+)\/bin\/activate$/);
+  if (match) {
+    const venvName = match[1];
+    const newVfs = { ...ctx.vfs };
+    if (newVfs.virtualEnv) {
+      newVfs.virtualEnv = {
+        ...newVfs.virtualEnv,
+        activePythonVenv: venvName,
+      };
+    }
+    return {
+      output: [],
+      success: true,
+      newVfs,
+    };
+  }
+  
   return {
     output: [],
     success: true,
@@ -1125,6 +1143,19 @@ function executeGrep(args: string[], ctx: ExecutionContext): CommandExecutionRes
  * deactivateコマンドの実行（シミュレーション）
  */
 function executeDeactivate(args: string[], ctx: ExecutionContext): CommandExecutionResult {
+  const newVfs = { ...ctx.vfs };
+  if (newVfs.virtualEnv && newVfs.virtualEnv.activePythonVenv) {
+    newVfs.virtualEnv = {
+      ...newVfs.virtualEnv,
+      activePythonVenv: null,
+    };
+    return {
+      output: [],
+      success: true,
+      newVfs,
+    };
+  }
+  
   return {
     output: [],
     success: true,

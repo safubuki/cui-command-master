@@ -89,6 +89,8 @@ export interface VirtualEnvState {
   branches: string[];
   /** Git stashスタック */
   stashStack: number;
+  /** アクティブなPython仮想環境名（nullの場合は非アクティブ） */
+  activePythonVenv: string | null;
 }
 
 /** 判定時コンテキスト */
@@ -169,6 +171,8 @@ export interface TerminalLine {
   type: TerminalLineType;
   content: string;
   timestamp: number;
+  /** 入力行の場合、その時点のプロンプトを保存 */
+  prompt?: string;
 }
 
 /** コマンド統計 */

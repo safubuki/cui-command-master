@@ -15,6 +15,7 @@ export function createInitialVirtualEnv(): import('../types').VirtualEnvState {
     currentBranch: 'main',
     branches: ['main'],
     stashStack: 0,
+    activePythonVenv: null,      // 仮想環境は非アクティブ
   };
 }
 

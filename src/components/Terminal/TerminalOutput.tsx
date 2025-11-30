@@ -47,12 +47,14 @@ export function TerminalOutput({ lines, prompt }: TerminalOutputProps) {
       
       // inputタイプはプロンプト付きで表示
       if (line.type === 'input') {
+        // 各行に保存されたプロンプトを使用（なければ現在のプロンプト）
+        const linePrompt = line.prompt || prompt;
         result.push(
           <div
             key={`${line.timestamp}-${i}`}
             className={`${styles.line} ${styles.lineInput}`}
           >
-            <span className={styles.historyPrompt}>{prompt}</span>
+            <span className={styles.historyPrompt}>{linePrompt}</span>
             <span>{line.content}</span>
           </div>
         );

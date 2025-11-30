@@ -106,7 +106,7 @@ type AppAction =
   | { type: 'SET_CATEGORY_FILTER'; payload: CommandCategory | 'all' }
   | { type: 'NEW_MINI_SCENARIO' }
   | { type: 'ADVANCE_STEP' }
-  | { type: 'EXECUTE_COMMAND'; payload: { input: string; output: string[]; newVfs?: VFSState } }
+  | { type: 'EXECUTE_COMMAND'; payload: { input: string; output: string[]; newVfs?: VFSState; prompt: string } }
   | { type: 'SET_TASK_RESULT'; payload: { result: TaskResult; message?: string } }
   | { type: 'ADD_TERMINAL_LINE'; payload: TerminalLine }
   | { type: 'CLEAR_TERMINAL' }
@@ -138,6 +138,7 @@ function createInitialTerminalHistory(prompt: string): TerminalLine[] {
       type: 'input',
       content: '',  // 空のコマンド（プロンプトのみ表示）
       timestamp: Date.now(),
+      prompt,       // その時点のプロンプトを保存
     },
   ];
 }
@@ -230,14 +231,15 @@ function appReducer(state: AppState, action: AppAction): AppState {
     }
     
     case 'EXECUTE_COMMAND': {
-      const { input, output, newVfs } = action.payload;
+      const { input, output, newVfs, prompt } = action.payload;
       const newLines: TerminalLine[] = [];
       
-      // 入力コマンドを追加
+      // 入力コマンドを追加（その時点のプロンプトも保存）
       newLines.push({
         type: 'input',
         content: input,
         timestamp: Date.now(),
+        prompt,
       });
       
       // 出力を追加
@@ -388,7 +390,12 @@ export function AppProvider({ children }: AppProviderProps) {
     const currentDir = state.vfs.currentPath === state.env.homeDir 
       ? '~' 
       : state.vfs.currentPath.split('/').pop() || '/';
-    return `${username}@${hostname}:${currentDir}$`;
+    
+    // Python仮想環境がアクティブな場合はプレフィックスを追加
+    const venvName = state.vfs.virtualEnv?.activePythonVenv;
+    const venvPrefix = venvName ? `(${venvName}) ` : '';
+    
+    return `${venvPrefix}${username}@${hostname}:${currentDir}$`;
   };
   
   // 最後のステップかどうか
@@ -413,6 +420,9 @@ export function AppProvider({ children }: AppProviderProps) {
       env: state.env,
     });
     
+    // 現在のプロンプトを取得（コマンド実行前の状態）
+    const currentPrompt = getPrompt();
+    
     // 出力をターミナルに追加
     dispatch({
       type: 'EXECUTE_COMMAND',
@@ -420,6 +430,7 @@ export function AppProvider({ children }: AppProviderProps) {
         input: input.trim(),
         output: result.output,
         newVfs: result.newVfs,
+        prompt: currentPrompt,
       },
     });
     
