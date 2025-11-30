@@ -4,7 +4,7 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/typing_command/',  // リポジトリ名に合わせる
+  base: '/cui-command-master/',  // リポジトリ名に合わせる
   plugins: [react()],
   resolve: {
     alias: {
