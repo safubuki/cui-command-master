@@ -1,14 +1,17 @@
-# CUI Typing Master
+# CUI Command Master
 
-CUI操作（Linux, Git, Docker, Python, Network）を正確な構文と実務フローで習得するためのWebトレーニングアプリです。
+🐢 **指が覚える、本物のコマンド力。**
+
+CUI操作（Linux, Network, Python, Git, Docker）を正確な構文と実務フローで習得するためのWebトレーニングアプリです。
 
 ## ✨ 特徴
 
-- **🎮 Arcade Mode**: ランダムに出題されるコマンドを入力して練習
-- **📖 Scenario Mode**: 実務で使う一連のコマンドフローを練習
-- **🔄 Dynamic Variable System**: ファイル名やIPアドレスが毎回変わり、暗記を防止
-- **💡 段階的ヒント**: フォーマットヒントで構文を確認
-- **📊 統計機能**: 正答率や苦手コマンドを可視化
+- **📖 ミニシナリオ形式**: 3〜4ステップの実務フローでコマンドを練習
+- **🔄 Dynamic Variable System**: ファイル名・IPアドレス・コンテナ名が毎回変わり、暗記を防止
+- **🖥️ 仮想ターミナル**: コマンド実行をシミュレーションし、結果を表示
+- **💡 ヒント機能**: フォーマットヒントで構文を確認
+- **📚 解説・応用パターン**: 正解後にコマンドの活用シーンと応用例を表示
+- **📊 統計機能**: 正答率や回答数を可視化
 
 ## 🚀 環境構築
 
@@ -21,8 +24,8 @@ CUI操作（Linux, Git, Docker, Python, Network）を正確な構文と実務フ
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/<username>/typing_command.git
-cd typing_command
+git clone https://github.com/safubuki/cui-command-master.git
+cd cui-command-master
 
 # 依存関係をインストール
 npm install
@@ -38,30 +41,30 @@ npm run dev
 
 ## 📖 利用手順
 
-### Arcade Mode
+### 基本的な使い方
 
-1. 画面上部の「🎮 Arcade」タブをクリック
-2. カテゴリを選択（すべて / Linux / Git / Docker / Python / Network）
-3. 表示されたお題に従ってコマンドを入力
-4. Enterキーで送信
-5. 正解すると次の問題が出題されます
-
-### Scenario Mode
-
-1. 画面上部の「📖 Scenario」タブをクリック
-2. 練習したいシナリオを選択
+1. 画面上部のカテゴリボタンで練習したい分野を選択
+   - **すべて**: 全カテゴリからランダムに出題
+   - **Linux**: ファイル操作・システム管理
+   - **Network**: SSH・SCP・ping
+   - **Python**: 仮想環境・pip管理
+   - **Git**: バージョン管理
+   - **Docker**: コンテナ操作
+2. ミニシナリオ（3〜4ステップ）が開始
 3. 各ステップのお題に従ってコマンドを入力
-4. すべてのステップを完了するとシナリオ達成
+4. Enterキーで送信、正解すると次のステップへ
+5. すべてのステップを完了すると次のシナリオが自動で開始
 
 ### ヒント機能
 
-- **フォーマットヒント**: コマンドの基本構文を表示
-- **もっとヒント**: 追加のヒントを表示（完全な答えは表示されません）
+- **💡 ヒント**: コマンドの基本構文と説明を表示
+- **📚 解説・応用パターン**: 正解後に表示、実務での活用シーンを学習
 
-### 履歴機能
+### ターミナル機能
 
-- ↑キー: 前のコマンド履歴を表示
-- ↓キー: 次のコマンド履歴を表示
+- コマンドを入力すると実行結果がシミュレーション表示されます
+- ↑↓キーで履歴を表示
+- スキップボタンで次のシナリオへ移動可能
 
 ## 🌐 GitHub Pages へのデプロイ
 
@@ -73,23 +76,14 @@ npm run dev
 
 ```bash
 git add .
-git commit -m "Initial commit"
+git commit -m "Update"
 git push origin main
 ```
 
 ### 公開URL
 
 ```text
-https://<username>.github.io/typing_command/
-```
-
-### 手動デプロイ
-
-```bash
-# ビルド
-npm run build
-
-# dist フォルダの内容を任意のホスティングサービスにアップロード
+https://safubuki.github.io/cui-command-master/
 ```
 
 ## 🛠️ 開発コマンド
@@ -106,9 +100,6 @@ npm run preview
 
 # リント
 npm run lint
-
-# テスト
-npm run test
 ```
 
 ## 📁 プロジェクト構成
@@ -120,12 +111,16 @@ src/
 ├── components/           # UIコンポーネント
 │   ├── Terminal/         # ターミナルUI
 │   ├── Hint/             # ヒントパネル
-│   ├── Mode/             # モード切替・選択
 │   └── Score/            # スコア表示
 ├── context/              # グローバル状態管理
-├── hooks/                # カスタムフック
-├── data/                 # コマンド・タスク定義
+├── data/                 # コマンド・シナリオ定義
+│   ├── miniScenarios.ts  # ミニシナリオ定義
+│   ├── commandDefs.ts    # コマンド検証定義
+│   └── commandTips.ts    # コマンド解説
 ├── lib/                  # ユーティリティ
+│   ├── commandExecutor.ts # コマンド実行シミュレーション
+│   ├── vfs.ts            # 仮想ファイルシステム
+│   └── dynamicVars.ts    # 動的変数生成
 ├── types/                # 型定義
 └── styles/               # グローバルスタイル
 ```
@@ -134,25 +129,28 @@ src/
 
 ### Linux
 
-- ファイル操作: `ls`, `cd`, `pwd`, `mkdir`, `rm`, `cp`, `mv`, `touch`, `cat`
+- ファイル操作: `ls`, `cd`, `pwd`, `mkdir`, `rm`, `cp`, `mv`, `touch`, `cat`, `grep`
 - システム: `ps`, `top`, `kill`, `df`, `free`
+
+### Network
+
+- `ping`, `ssh`, `scp`, `wget`, `curl`, `exit`
+
+### Python
+
+- `python3 -m venv`, `source <venv>/bin/activate`, `deactivate`
+- `pip install`, `pip list`, `pip freeze`
 
 ### Git
 
 - `git status`, `git add`, `git commit`, `git push`, `git pull`, `git log`
+- `git branch`, `git checkout`, `git diff`, `git stash`
 
 ### Docker
 
-- `docker ps`, `docker run`, `docker stop`, `docker rm`, `docker rmi`
+- `docker ps`, `docker images`, `docker run`, `docker stop`, `docker rm`, `docker rmi`
+- `docker pull`, `docker logs`, `docker exec`
 - `docker compose up`, `docker compose down`
-
-### Python
-
-- `python3 -m venv`, `source`, `pip install`, `pip list`
-
-### Network
-
-- `ping`, `ssh`, `scp`, `exit`
 
 ## 📝 ライセンス
 

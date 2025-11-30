@@ -465,6 +465,10 @@ const DOCKER_SCENARIOS: MiniScenario[] = [
     ],
     setupVfs: (vfs, dynamic, homeDir) => {
       vfs.currentPath = homeDir;
+      // デバッグ対象のコンテナを起動状態にする
+      if (vfs.virtualEnv && dynamic.container) {
+        vfs.virtualEnv.runningContainers = [dynamic.container];
+      }
       return vfs;
     },
   },
@@ -497,6 +501,10 @@ const DOCKER_SCENARIOS: MiniScenario[] = [
     ],
     setupVfs: (vfs, dynamic, homeDir) => {
       vfs.currentPath = homeDir;
+      // 停止・削除対象のコンテナを起動状態にする
+      if (vfs.virtualEnv && dynamic.container) {
+        vfs.virtualEnv.runningContainers = [dynamic.container];
+      }
       return vfs;
     },
   },
