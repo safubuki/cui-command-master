@@ -117,8 +117,24 @@ input, textarea {
   flex-shrink: 0;
 }
 
-.title-section {
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: var(--spacing-sm);
+}
+
+.app-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.title-section {
+  flex: 1;
 }
 
 .app-title {

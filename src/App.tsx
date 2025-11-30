@@ -39,15 +39,23 @@ function SkipButton() {
 }
 
 function AppContent() {
+  // ベースパスを取得（GitHub Pages対応）
+  const basePath = import.meta.env.BASE_URL || '/';
+  
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="title-section">
-          <h1 className="app-title">
-            <span>$</span> CUI Command Master
-          </h1>
-          <p className="app-catchcopy">指が覚える、本物のコマンド力。</p>
-          <p className="app-subtitle">Linux / Network / Python / Git / Docker — 実務で使うコマンドをタイピングで体得</p>
+        <div className="header-content">
+          <img 
+            src={`${basePath}turtle-icon.png`} 
+            alt="" 
+            className="app-icon" 
+          />
+          <div className="title-section">
+            <h1 className="app-title">CUI Command Master</h1>
+            <p className="app-catchcopy">指が覚える、本物のコマンド力。</p>
+            <p className="app-subtitle">Linux / Network / Python / Git / Docker — 実務で使うコマンドをタイピングで体得</p>
+          </div>
         </div>
         <CategoryFilter />
       </header>
